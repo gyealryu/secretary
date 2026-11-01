@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 비서</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">AI 비서 <span class="badge">회사용 · 로컬</span></div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="chat">대화</button>
+      <button class="tab" data-tab="docs">문서</button>
+      <button class="tab" data-tab="tasks">할 일</button>
+    </nav>
+    <button class="icon-btn" id="open-settings" title="설정">설정</button>
+  </header>
+
+  <!-- 대화 -->
+  <main class="view active" id="view-chat">
+    <aside class="sidebar">
+      <button class="primary wide" id="new-chat">+ 새 대화</button>
+      <ul id="conv-list" class="conv-list"></ul>
+    </aside>
+    <section class="chat">
+      <div id="messages" class="messages">
+        <div class="empty" id="chat-empty">
+          <h2>무엇을 같이 고민해 볼까요?</h2>
+          <p>개발 아이디어, 웹페이지 구성, 코드 질문 무엇이든 좋아요.</p>
+        </div>
+      </div>
+      <form id="chat-form" class="composer">
+        <textarea id="chat-input" rows="2" placeholder="메시지를 입력하세요 (Enter 전송, Shift+Enter 줄바꿈)"></textarea>
+        <button class="primary" id="chat-send" type="submit">보내기</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- 문서 -->
+  <main class="view" id="view-docs">
+    <section class="docs">
+      <div class="panel">
+        <h3>1. 문서 넣기</h3>
+        <label class="drop" id="drop">
+          <input type="file" id="doc-file" hidden>
+          <span id="drop-label">파일을 끌어다 놓거나 클릭하세요 (txt, md, pdf, docx, 코드 파일)</span>
+        </label>
+        <textarea id="doc-text" rows="10" placeholder="또는 여기에 내용을 직접 붙여 넣으세요"></textarea>
+        <div class="hint" id="doc-count"></div>
+      </div>
+      <div class="panel">
+        <h3>2. 할 작업</h3>
+        <div class="modes" id="doc-modes">
+          <button class="mode active" data-mode="summary">요약</button>
+          <button class="mode" data-mode="minutes">회의록</button>
+          <button class="mode" data-mode="email">이메일 초안</button>
+          <button class="mode" data-mode="report">보고서 초안</button>
+          <button class="mode" data-mode="code_review">코드 리뷰</button>
+          <button class="mode" data-mode="free">직접 요청</button>
+        </div>
+        <input id="doc-instruction" placeholder="추가 요청 (선택) 예: 5줄 이내로, 팀장님께 보내는 톤으로">
+        <button class="primary" id="doc-run">실행</button>
+      </div>
+      <div class="panel result-panel">
+        <div class="result-head">
+          <h3>결과</h3>
+          <button class="ghost" id="doc-copy">복사</button>
+        </div>
+        <div id="doc-result" class="md result"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 할 일 -->
+  <main class="view" id="view-tasks">
+    <section class="tasks">
+      <form id="task-ai-form" class="panel">
+        <h3>말로 추가하기</h3>
+        <div class="row">
+          <input id="task-ai-input" placeholder="예: 내일 오후 3시 디자인 회의, 금요일까지 로그인 페이지 완성">
+          <button class="primary" type="submit" id="task-ai-btn">추가</button>
+        </div>
+      </form>
+      <form id="task-form" class="panel">
+        <h3>직접 추가하기</h3>
+        <div class="row">
+          <input id="task-title" placeholder="할 일">
+          <input id="task-due" type="datetime-local">
+          <button type="submit">추가</button>
+        </div>
+      </form>
+      <div class="panel">
+        <h3>목록</h3>
+        <ul id="task-list" class="task-list"></ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- 설정 -->
+  <dialog id="settings">
+    <form method="dialog" id="settings-form">
+      <h3>설정</h3>
+      <label>모델 서버 주소
+        <input name="base_url" placeholder="http://localhost:11434/v1">
+      </label>
+      <label>모델 이름
+        <div class="row">
+          <input name="model" list="model-options" placeholder="qwen2.5-coder:7b">
+          <button type="button" id="test-conn">연결 확인</button>
+        </div>
+        <datalist id="model-options"></datalist>
+      </label>
+      <label>API 키 (Ollama는 비워 두세요)
+        <input name="api_key" type="password">
+      </label>
+      <label>문서 최대 글자 수
+        <input name="max_doc_chars" type="number" min="1000" step="1000">
+      </label>
+      <div class="hint" id="conn-status"></div>
+      <div class="dialog-actions">
+        <button value="cancel" formnovalidate>취소</button>
+        <button class="primary" value="save" id="save-settings">저장</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast"></div>
+  <script src="/static/markdown.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
